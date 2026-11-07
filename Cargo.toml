@@ -1,0 +1,19 @@
+[workspace]
+resolver = "3"
+members = ["crates/ui", "crates/kit", "crates/gallery"]
+# The project template has placeholders; new-project.sh turns it into a real crate.
+exclude = ["template"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/Hamsteri777/slint-kit"
+
+[workspace.dependencies]
+# Slint is pinned to the 1.18 series: the platform helpers use the unstable winit 0.30 API.
+slint = { version = "1.18.1", features = ["unstable-winit-030"] }
+slint-build = "1.18.1"
+ksni = { version = "0.3.7", default-features = false, features = ["blocking", "async-io"] }
+slint-kit = { path = "crates/kit" }
+slint-kit-ui = { path = "crates/ui" }

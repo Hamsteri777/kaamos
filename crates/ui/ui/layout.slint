@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Page building blocks on top of widgets.slint: setting rows, titled cards, stat cards,
+// page title and hint text.
+
+import { Theme } from "theme.slint";
+import { Card, Caps } from "widgets.slint";
+import { InfoTip } from "info.slint";
+
+// Small muted text that wraps.
+export component Hint inherits Text {
+    font-size: Theme.font-small;
+    color: Theme.muted;
+    wrap: word-wrap;
+}
+
+// Page heading.
+export component PageTitle inherits Text {
+    font-size: Theme.font-title;
+    font-weight: 700;
+    color: Theme.text-strong;
+    vertical-alignment: center;
+}
+
+// Setting row: label (with an optional (i)) and hint on the left, the control on the right.
+// Put the control inside: `SettingRow { label: "Debounce"; SpinBox { } }`.
+export component SettingRow inherits HorizontalLayout {
+    in property <string> label;
+    in property <string> hint;
+    in property <string> info-title;
+    in property <string> info-body;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    spacing: 16px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        alignment: center;
+        spacing: 2px;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Text {
+                text: root.label;
+                color: Theme.text;
+                wrap: word-wrap;
+                vertical-alignment: center;
+            }
+            if root.info-body != "": InfoTip {
+                title: root.info-title != "" ? root.info-title : root.label;
+                body: root.info-body;
+            }
+        }
+        if root.hint != "": Text {
+            text: root.hint;
+            font-size: Theme.font-small;
+            color: Theme.muted;
+            wrap: word-wrap;
+        }
+    }
+    HorizontalLayout {
+        alignment: end;
+        @children
+    }
+}
+
+// Card with an upper-case title (and an optional (i)); content goes inside.
+export component Section inherits Card {
+    in property <string> title;
+    in property <string> info-title;
+    in property <string> info-body;
+    VerticalLayout {
+        padding: 18px;
+        spacing: 8px;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Caps {
+                text: root.title;
+                vertical-alignment: center;
+            }
+            if root.info-body != "": InfoTip {
+                title: root.info-title != "" ? root.info-title : root.title;
+                body: root.info-body;
+            }
+        }
+        @children
+    }
+}
+
+// Status card: label, large value and a small caption.
+export component Stat inherits Card {
+    in property <string> label;
+    in property <string> value;
+    in property <string> note;
+    in property <color> value-color: Theme.text-strong;
+    min-width: 170px;
+    horizontal-stretch: 1;
+    VerticalLayout {
+        padding: 16px;
+        spacing: 4px;
+        Caps { text: root.label; }
+        Text {
+            text: root.value;
+            font-size: 28px;
+            font-weight: 700;
+            color: root.value-color;
+        }
+        Text {
+            text: root.note;
+            font-size: Theme.font-small;
+            color: Theme.muted;
+            wrap: word-wrap;
+        }
+    }
+}

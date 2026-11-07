@@ -1,0 +1,204 @@
+// __TITLE__ – window. The logic lives in Rust (src/main.rs); this file shows values and
+// reports edits. Components: slint-kit (@kit/kit.slint).
+
+import { SpinBox, ScrollView } from "std-widgets.slint";
+import {
+    Theme, NButton, NSwitch, Chip, NavItem, Hint, PageTitle, SettingRow, Section, Stat,
+    InfoLayer,
+} from "@kit/kit.slint";
+
+export component MainWindow inherits Window {
+    title: "__TITLE__";
+    preferred-width: 900px;
+    preferred-height: 640px;
+    min-width: 720px;
+    min-height: 480px;
+    background: Theme.bg;
+    default-font-family: "Inter";
+    default-font-size: Theme.font-body;
+
+    in-out property <int> page: 0;
+    in property <bool> busy;
+    in property <string> status;
+    in property <bool> status-error;
+
+    // Example settings: the values last read from the worker and the edited ones.
+    in property <bool> loaded-enabled;
+    in property <int> loaded-level;
+    in-out property <bool> enabled;
+    in-out property <int> level;
+    private property <bool> dirty: root.enabled != root.loaded-enabled || root.level != root.loaded-level;
+
+    in-out property <bool> autostart;
+
+    callback reload();
+    callback save();
+    callback revert();
+    callback autostart-toggled(bool);
+
+    HorizontalLayout {
+        // ── Sidebar ────────────────────────────────────────────────────────
+        Rectangle {
+            width: 216px;
+            background: Theme.panel;
+            Rectangle {
+                x: parent.width - 1px;
+                width: 1px;
+                background: Theme.hairline;
+            }
+            VerticalLayout {
+                padding: 14px;
+                padding-top: 20px;
+                spacing: 4px;
+                VerticalLayout {
+                    padding-left: 8px;
+                    padding-bottom: 18px;
+                    Text {
+                        text: "__TITLE__";
+                        font-size: Theme.font-h2;
+                        font-weight: 700;
+                        color: Theme.text;
+                    }
+                }
+                NavItem {
+                    text: "Status";
+                    icon: @image-url("@kit/icons/nav-state.svg");
+                    active: root.page == 0;
+                    clicked => { root.page = 0; }
+                }
+                NavItem {
+                    text: "Settings";
+                    icon: @image-url("@kit/icons/nav-eq.svg");
+                    active: root.page == 1;
+                    clicked => { root.page = 1; }
+                }
+                Rectangle { vertical-stretch: 1; }
+                NavItem {
+                    text: "App";
+                    icon: @image-url("@kit/icons/nav-settings.svg");
+                    active: root.page == 2;
+                    clicked => { root.page = 2; }
+                }
+            }
+        }
+
+        // ── Pages ──────────────────────────────────────────────────────────
+        VerticalLayout {
+            horizontal-stretch: 1;
+            padding: 24px;
+            padding-left: 28px;
+            padding-right: 28px;
+            spacing: 16px;
+            PageTitle {
+                text: root.page == 0 ? "Status" : root.page == 1 ? "Settings" : "App";
+            }
+
+            ScrollView {
+                vertical-stretch: 1;
+                VerticalLayout {
+                    spacing: 16px;
+                    padding-right: 6px;
+
+                    if root.page == 0: HorizontalLayout {
+                        spacing: 16px;
+                        alignment: start;
+                        Stat {
+                            label: "FEATURE";
+                            value: root.loaded-enabled ? "On" : "Off";
+                            note: "value read by the worker thread";
+                        }
+                        Stat {
+                            label: "LEVEL";
+                            value: "\{root.loaded-level}";
+                            value-color: Theme.accent;
+                            note: "change it on the Settings page";
+                        }
+                    }
+
+                    if root.page == 1: Section {
+                        title: "EXAMPLE SETTINGS";
+                        SettingRow {
+                            label: "Feature";
+                            info-body: "An example switch. Edits stay in the window until Save; the worker thread then writes them.";
+                            NSwitch {
+                                text: root.enabled ? "On" : "Off";
+                                checked <=> root.enabled;
+                                enabled: !root.busy;
+                            }
+                        }
+                        SettingRow {
+                            label: "Level";
+                            hint: "0–10";
+                            SpinBox {
+                                value <=> root.level;
+                                minimum: 0;
+                                maximum: 10;
+                                enabled: !root.busy;
+                            }
+                        }
+                    }
+
+                    if root.page == 2: Section {
+                        title: "STARTUP";
+                        SettingRow {
+                            label: "Start at login";
+                            hint: "Starts in the tray. Closing the window hides it to the tray; quit from the tray menu.";
+                            NSwitch {
+                                text: root.autostart ? "On" : "Off";
+                                checked <=> root.autostart;
+                                toggled(on) => { root.autostart-toggled(on); }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Bottom bar ─────────────────────────────────────────────────
+            Rectangle {
+                background: Theme.panel;
+                border-radius: Theme.radius-sm;
+                border-width: 1px;
+                border-color: root.dirty ? Theme.accent : Theme.hairline;
+                VerticalLayout {
+                    padding: 10px;
+                    spacing: 6px;
+                    HorizontalLayout {
+                        spacing: 10px;
+                        NButton {
+                            text: "Reload";
+                            kind: 2;
+                            enabled: !root.busy && !root.dirty;
+                            clicked => { root.reload(); }
+                        }
+                        Text {
+                            text: root.dirty ? "Unsaved changes" : "No changes";
+                            color: root.dirty ? Theme.text : Theme.muted;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                        NButton {
+                            text: "Revert";
+                            enabled: !root.busy && root.dirty;
+                            clicked => { root.revert(); }
+                        }
+                        NButton {
+                            text: "Save";
+                            kind: 1;
+                            enabled: !root.busy && root.dirty;
+                            clicked => { root.save(); }
+                        }
+                    }
+                    if root.busy || root.status != "": Text {
+                        text: root.busy ? "Working…  " + root.status : root.status;
+                        font-size: Theme.font-small;
+                        color: root.status-error ? Theme.error-text : Theme.muted;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+    }
+
+    // Must be the last child: draws the (i) explanations on top of everything.
+    InfoLayer { }
+}

@@ -1,0 +1,4 @@
+# Fetch git dependencies with the git CLI, so its credential helper (e.g. `gh auth setup-git`)
+# is used for private repositories.
+[net]
+git-fetch-with-cli = true

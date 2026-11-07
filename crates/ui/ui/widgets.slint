@@ -1,0 +1,398 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Controls in the dark theme. Std widgets (ComboBox, LineEdit, ScrollView) use the
+// fluent-dark style; buttons, switches and segments are drawn here.
+
+import { LineEdit } from "std-widgets.slint";
+import { Theme } from "theme.slint";
+
+// A push button. kind: 0 = secondary (outlined), 1 = primary (violet), 2 = quiet (no border).
+// `checked` shows a pressed toggle (accent), `danger` a pressed alarm toggle (Mute).
+export component NButton inherits Rectangle {
+    in property <string> text;
+    in property <int> kind: 0;
+    in property <bool> enabled: true;
+    in property <bool> checked: false;
+    in property <bool> danger: false;
+    in property <length> font-size: Theme.font-body;
+    in property <image> icon;
+    in property <bool> has-icon: false;
+    callback clicked();
+
+    min-height: 40px;
+    min-width: max(40px, label.preferred-width + 28px);
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-sm;
+    opacity: root.enabled ? 1 : 0.45;
+    background: root.checked && root.danger ? #F871712a
+        : root.checked ? #2DD4BF24
+        : root.kind == 1 ? (touch.has-hover && root.enabled ? Theme.primary-hover : Theme.primary)
+        : root.kind == 2 ? (touch.has-hover && root.enabled ? Theme.surface-2 : transparent)
+        : (touch.has-hover && root.enabled ? Theme.surface-3 : Theme.surface-2);
+    border-width: root.kind == 1 || root.kind == 2 ? 0 : 1px;
+    border-color: root.checked && root.danger ? Theme.error
+        : root.checked ? Theme.accent
+        : focus.has-focus ? Theme.accent : Theme.control-border;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-checked: root.checked;
+    accessible-enabled: root.enabled;
+    accessible-action-default => {
+        if (root.enabled) {
+            root.clicked();
+        }
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.clicked();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => {
+            root.clicked();
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: 14px;
+        padding-right: 14px;
+        spacing: 8px;
+        alignment: center;
+        if root.has-icon: Image {
+            source: root.icon;
+            width: 18px;
+            colorize: label.color;
+            vertical-alignment: center;
+        }
+        label := Text {
+            text: root.text;
+            font-size: root.font-size;
+            font-weight: 600;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            color: root.checked && root.danger ? Theme.error-text
+                : root.kind == 1 ? Theme.text-strong : Theme.text;
+        }
+    }
+}
+
+// An on/off switch with a label.
+export component NSwitch inherits Rectangle {
+    in property <string> text;
+    in-out property <bool> checked;
+    in property <bool> enabled: true;
+    callback toggled(bool);
+
+    min-height: 36px;
+    max-height: 36px;
+    min-width: label.preferred-width + 64px;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: 18px;
+    opacity: root.enabled ? 1 : 0.45;
+    background: root.checked ? #2DD4BF1f : touch.has-hover && root.enabled ? Theme.surface-3 : Theme.surface-2;
+    border-width: 1px;
+    border-color: root.checked ? Theme.accent : focus.has-focus ? Theme.accent : Theme.control-border;
+    accessible-role: checkbox;
+    accessible-label: root.text;
+    accessible-checked: root.checked;
+    accessible-enabled: root.enabled;
+    accessible-action-default => {
+        root.flip();
+    }
+
+    function flip() {
+        if (root.enabled) {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.flip();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => {
+            root.flip();
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: 6px;
+        padding-right: 14px;
+        spacing: 10px;
+        alignment: start;
+        Rectangle {
+            width: 38px;
+            height: 22px;
+            y: (parent.height - self.height) / 2;
+            border-radius: 11px;
+            background: root.checked ? Theme.accent : Theme.track;
+            Rectangle {
+                width: 16px;
+                height: 16px;
+                y: 3px;
+                x: root.checked ? parent.width - self.width - 3px : 3px;
+                border-radius: 8px;
+                background: root.checked ? Theme.on-accent : Theme.muted;
+                animate x { duration: 150ms; easing: ease; }
+            }
+        }
+
+        label := Text {
+            text: root.text;
+            font-size: Theme.font-small + 1px;
+            font-weight: 600;
+            color: Theme.text;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// A row of mutually exclusive choices.
+export component Segmented inherits Rectangle {
+    in property <[string]> model;
+    in-out property <int> current-index;
+    in property <bool> enabled: true;
+    in property <length> item-height: 32px;
+    callback selected(int);
+
+    min-height: root.item-height + 8px;
+    max-height: root.item-height + 8px;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: (root.item-height + 8px) / 2;
+    background: Theme.surface-2;
+    opacity: root.enabled ? 1 : 0.45;
+
+    HorizontalLayout {
+        padding: 4px;
+        spacing: 4px;
+        for item[i] in root.model: Rectangle {
+            min-width: t.preferred-width + 24px;
+            height: root.item-height;
+            border-radius: root.item-height / 2;
+            background: i == root.current-index ? Theme.primary
+                : ta.has-hover && root.enabled ? Theme.surface-3 : transparent;
+            accessible-role: button;
+            accessible-label: item;
+            accessible-checked: i == root.current-index;
+            accessible-action-default => {
+                if (root.enabled) {
+                    root.current-index = i;
+                    root.selected(i);
+                }
+            }
+            ta := TouchArea {
+                enabled: root.enabled;
+                mouse-cursor: root.enabled ? pointer : default;
+                clicked => {
+                    root.current-index = i;
+                    root.selected(i);
+                }
+            }
+
+            t := Text {
+                text: item;
+                font-size: Theme.font-small + 1px;
+                font-weight: 600;
+                color: i == root.current-index ? Theme.text-strong : Theme.text;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+}
+
+// A card: surface with a hairline border. Content goes inside a layout of your own.
+export component Card inherits Rectangle {
+    in property <bool> highlighted: false;
+    background: Theme.surface;
+    border-radius: Theme.radius;
+    border-width: root.highlighted ? 2px : 1px;
+    border-color: root.highlighted ? Theme.accent : Theme.hairline;
+    drop-shadow-blur: 16px;
+    drop-shadow-offset-y: 4px;
+    drop-shadow-color: #00000073;
+    @children
+}
+
+// A small upper-case section label.
+export component Caps inherits Text {
+    font-size: Theme.font-caps;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: Theme.muted;
+}
+
+// A pill with text. tone: 0 = neutral, 1 = violet, 2 = warning, 3 = accent, 4 = error.
+export component Chip inherits Rectangle {
+    in property <string> text;
+    in property <int> tone: 0;
+    height: 24px;
+    min-width: t.preferred-width + 20px;
+    border-radius: 12px;
+    background: root.tone == 1 ? #8B5CF62e
+        : root.tone == 2 ? #FDBA741f
+        : root.tone == 3 ? #2DD4BF1f
+        : root.tone == 4 ? #F871712a : Theme.surface-2;
+    t := Text {
+        text: root.text;
+        font-size: Theme.font-small;
+        font-weight: 600;
+        color: root.tone == 1 ? Theme.brand-text
+            : root.tone == 2 ? Theme.warning
+            : root.tone == 3 ? Theme.accent
+            : root.tone == 4 ? Theme.error-text : Theme.text;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+// A navigation entry in the sidebar.
+export component NavItem inherits Rectangle {
+    in property <string> text;
+    in property <image> icon;
+    in property <bool> active;
+    callback clicked();
+    height: 42px;
+    border-radius: Theme.radius-sm;
+    background: root.active ? Theme.surface-2 : ta.has-hover ? #ffffff0d : transparent;
+    accessible-role: tab;
+    accessible-label: root.text;
+    accessible-checked: root.active;
+    accessible-action-default => {
+        root.clicked();
+    }
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        spacing: 12px;
+        Image {
+            source: root.icon;
+            width: 18px;
+            colorize: root.active ? Theme.accent : Theme.muted;
+            vertical-alignment: center;
+        }
+
+        Text {
+            text: root.text;
+            font-size: Theme.font-body;
+            font-weight: 600;
+            color: root.active ? Theme.text-strong : Theme.muted;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// A value that can be typed (Enter), stepped with the wheel (Shift for bigger steps) or with
+// the − and + buttons.
+export component ValueField inherits HorizontalLayout {
+    in property <string> text;
+    in property <string> unit;
+    in property <bool> enabled;
+    callback commit(string);
+    callback step(int, bool);
+    spacing: 4px;
+    NButton {
+        text: "−";
+        kind: 2;
+        min-width: 30px;
+        min-height: 32px;
+        enabled: root.enabled;
+        clicked => {
+            root.step(-1, false);
+        }
+    }
+
+    TouchArea {
+        scroll-event(event) => {
+            if (event.delta-y > 0) {
+                root.step(1, event.modifiers.shift);
+            } else if (event.delta-y < 0) {
+                root.step(-1, event.modifiers.shift);
+            }
+            accept
+        }
+        edit := LineEdit {
+            min-width: 72px;
+            text: root.text;
+            enabled: root.enabled;
+            horizontal-alignment: right;
+            // Select everything on focus so a new number replaces the old one.
+            changed has-focus => {
+                if (self.has-focus) {
+                    self.select-all();
+                }
+            }
+            accepted(t) => {
+                root.commit(t);
+                // Back to the value in effect: a refused entry does not stay, an accepted one
+                // comes back through `text`.
+                self.text = root.text;
+            }
+        }
+    }
+
+    // Typing replaces the binding above; follow new values from here on.
+    changed text => {
+        edit.text = root.text;
+    }
+
+    Text {
+        text: root.unit;
+        min-width: 22px;
+        font-size: Theme.font-small;
+        color: Theme.muted;
+        vertical-alignment: center;
+    }
+
+    NButton {
+        text: "+";
+        kind: 2;
+        min-width: 30px;
+        min-height: 32px;
+        enabled: root.enabled;
+        clicked => {
+            root.step(1, false);
+        }
+    }
+}
+
+// A dialog frame for popups. tone 1 = warning border.
+export component Dialog inherits Rectangle {
+    in property <int> tone: 0;
+    background: Theme.surface;
+    border-radius: Theme.radius;
+    border-width: root.tone == 1 ? 2px : 1px;
+    border-color: root.tone == 1 ? Theme.error : Theme.hairline-strong;
+    drop-shadow-blur: 32px;
+    drop-shadow-offset-y: 12px;
+    drop-shadow-color: #0000008c;
+    @children
+}

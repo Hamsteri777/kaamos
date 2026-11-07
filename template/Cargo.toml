@@ -1,0 +1,15 @@
+[package]
+name = "__APP__"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+description = "__TITLE__"
+
+[dependencies]
+# Same Slint series as slint-kit (its platform helpers use the unstable winit 0.30 API).
+slint = { version = "1.18.1", features = ["unstable-winit-030"] }
+slint-kit = { git = "https://github.com/Hamsteri777/slint-kit", tag = "v0.1.0" }
+
+[build-dependencies]
+slint-build = "1.18.1"
+slint-kit-ui = { git = "https://github.com/Hamsteri777/slint-kit", tag = "v0.1.0" }

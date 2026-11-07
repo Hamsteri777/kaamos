@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// slint-kit: everything from one import.
+//
+//     import { Theme, NButton, Section, SettingRow, InfoLayer } from "@kit/kit.slint";
+//
+// The build script maps "@kit" to this directory (slint_kit_ui::library_paths()).
+// Use the "fluent-dark" style for the std widgets (ComboBox, SpinBox, ScrollView, …).
+
+// Inter is embedded in the binary (SIL Open Font License, fonts/OFL.txt). Set
+// `default-font-family: "Inter";` on your Window.
+import "fonts/Inter-Regular.ttf";
+import "fonts/Inter-Medium.ttf";
+import "fonts/Inter-SemiBold.ttf";
+import "fonts/Inter-Bold.ttf";
+
+export { Theme } from "theme.slint";
+export { NButton, NSwitch, Segmented, Card, Caps, Chip, NavItem, ValueField, Dialog } from "widgets.slint";
+export { Hint, PageTitle, SettingRow, Section, Stat } from "layout.slint";
+export { InfoTip, InfoLayer, InfoState } from "info.slint";

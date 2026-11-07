@@ -1,0 +1,110 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// (i) info icon with an explanation on hover.
+//
+// The explanation is drawn by `InfoLayer` as an overlay on top of the window: place one
+// `InfoLayer { }` as the LAST child of your Window. The overlay takes no mouse events.
+// Why not the alternatives: a PopupWindow grabs the mouse, so hover breaks and the icon only
+// reacts on its edge pixels; Slint's Tooltip frames custom content in a box sized to the
+// unwrapped text, which looks too wide.
+
+import { Theme } from "theme.slint";
+
+export global InfoState {
+    in-out property <bool> visible;
+    in-out property <string> title;
+    in-out property <string> body;
+    // Position of the hovered icon in window coordinates.
+    in-out property <length> x;
+    in-out property <length> y;
+    // Which icon set the state, so a late "hover ended" from another icon does not hide it.
+    in-out property <int> owner;
+}
+
+// Counter used to give every InfoTip its own owner id.
+global InfoIds {
+    in-out property <int> next: 1;
+}
+
+export component InfoTip inherits Rectangle {
+    in property <string> title;
+    in property <string> body;
+    // Copied once in init: a binding to InfoIds.next would follow the counter.
+    private property <int> id;
+    init => {
+        root.id = InfoIds.next;
+        InfoIds.next += 1;
+    }
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    border-width: 1px;
+    border-color: touch.has-hover ? Theme.accent : Theme.control-border;
+    accessible-role: text;
+    accessible-label: root.title;
+    accessible-description: root.body;
+    Text {
+        text: "i";
+        font-size: 11px;
+        font-weight: 700;
+        color: touch.has-hover ? Theme.accent : Theme.muted;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    // Hit area larger than the circle.
+    touch := TouchArea {
+        x: -6px;
+        y: -6px;
+        width: parent.width + 12px;
+        height: parent.height + 12px;
+        changed has-hover => {
+            if (self.has-hover) {
+                InfoState.x = root.absolute-position.x;
+                InfoState.y = root.absolute-position.y;
+                InfoState.title = root.title;
+                InfoState.body = root.body;
+                InfoState.owner = root.id;
+                InfoState.visible = true;
+            } else if (InfoState.owner == root.id) {
+                InfoState.visible = false;
+            }
+        }
+    }
+}
+
+// The overlay. Below-right of the icon, kept inside the window; above the icon when there
+// is no room below.
+export component InfoLayer inherits Rectangle {
+    in property <length> bubble-width: 340px;
+    x: 0;
+    y: 0;
+    if InfoState.visible: Rectangle {
+        x: min(InfoState.x + 24px, root.width - self.width - 8px);
+        y: InfoState.y + 24px + self.preferred-height > root.height - 8px
+            ? max(8px, InfoState.y - self.preferred-height - 6px)
+            : InfoState.y + 24px;
+        width: root.bubble-width;
+        height: self.preferred-height;
+        background: Theme.surface-2;
+        border-radius: Theme.radius-xs;
+        border-width: 1px;
+        border-color: Theme.hairline-strong;
+        drop-shadow-blur: 12px;
+        drop-shadow-offset-y: 3px;
+        drop-shadow-color: #00000080;
+        VerticalLayout {
+            padding: 12px;
+            spacing: 6px;
+            Text {
+                text: InfoState.title;
+                font-weight: 700;
+                color: Theme.text-strong;
+            }
+            Text {
+                text: InfoState.body;
+                font-size: Theme.font-small + 1px;
+                color: Theme.text;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

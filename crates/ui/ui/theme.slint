@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Colours, type sizes and shapes of the dark theme. Text colours keep 4.5:1 on their
+// surfaces; control borders 3:1.
+
+export global Theme {
+    // Grounds, back to front.
+    out property <color> bg: #0F0F12;
+    out property <color> panel: #16161B;
+    out property <color> surface: #1E1E24;
+    out property <color> surface-2: #26262F;
+    out property <color> surface-3: #3A3A46;
+    out property <color> track: #2F2F3A;
+    // Lines.
+    out property <color> hairline: #ffffff12;
+    out property <color> hairline-strong: #ffffff1f;
+    out property <color> control-border: #6B7280;
+    // Text.
+    out property <color> text: #E5E7EB;
+    out property <color> text-strong: #FFFFFF;
+    out property <color> muted: #9CA3AF;
+    out property <color> on-accent: #0F0F12;
+    // Brand and states. Primary fills use the darker violet: white text 5.7:1.
+    out property <color> brand: #8B5CF6;
+    out property <color> brand-text: #C4B5FD;
+    out property <color> primary: #7C3AED;
+    out property <color> primary-hover: #6D28D9;
+    out property <color> accent: #2DD4BF;
+    out property <color> success: #34D399;
+    out property <color> live: #4ADE80;
+    out property <color> warning: #FDBA74;
+    out property <color> error: #F87171;
+    out property <color> error-text: #FCA5A5;
+    // The ring and curve gradient.
+    out property <brush> ring: @linear-gradient(45deg, #2DD4BF 0%, #8B5CF6 100%);
+
+    out property <length> radius: 14px;
+    out property <length> radius-sm: 10px;
+    out property <length> radius-xs: 6px;
+
+    out property <length> font-title: 24px;
+    out property <length> font-h2: 16px;
+    out property <length> font-body: 14px;
+    out property <length> font-small: 12px;
+    out property <length> font-caps: 11px;
+    out property <length> font-volume: 40px;
+}
