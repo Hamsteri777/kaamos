@@ -6,13 +6,21 @@ import { LineEdit } from "std-widgets.slint";
 import { Theme } from "theme.slint";
 
 // A push button. kind: 0 = secondary (outlined), 1 = primary (violet), 2 = quiet (no border).
-// `checked` shows a pressed toggle (accent), `danger` a pressed alarm toggle (Mute).
+// `checked` shows a pressed toggle (accent), `danger` a pressed alarm toggle (Mute). Set
+// `toggle: true` when the button switches something on and off, so screen readers announce
+// its state.
+//
+// Bindings: widgets that change their own `checked` / `current-index` (NSwitch, Segmented)
+// replace a one-way binding such as `current-index: expr` on the first click, after which the
+// widget no longer follows `expr`. Bind those with `<=>` to an `in-out` property that your code
+// sets (from Rust, or with `changed other => { … }`).
 export component NButton inherits Rectangle {
     in property <string> text;
     in property <int> kind: 0;
     in property <bool> enabled: true;
     in property <bool> checked: false;
     in property <bool> danger: false;
+    in property <bool> toggle: false;
     in property <length> font-size: Theme.font-body;
     in property <image> icon;
     in property <bool> has-icon: false;
@@ -35,6 +43,7 @@ export component NButton inherits Rectangle {
         : focus.has-focus ? Theme.accent : Theme.control-border;
     accessible-role: button;
     accessible-label: root.text;
+    accessible-checkable: root.toggle;
     accessible-checked: root.checked;
     accessible-enabled: root.enabled;
     accessible-action-default => {
@@ -46,6 +55,10 @@ export component NButton inherits Rectangle {
     focus := FocusScope {
         enabled: root.enabled;
         key-pressed(event) => {
+            // A FocusScope keeps focus when it is disabled; ignore keys then and on auto-repeat.
+            if (!root.enabled || event.repeat) {
+                return reject;
+            }
             if (event.text == " " || event.text == "\n") {
                 root.clicked();
                 return accept;
@@ -85,7 +98,7 @@ export component NButton inherits Rectangle {
     }
 }
 
-// An on/off switch with a label.
+// An on/off switch with a label. Bind `checked` with `<=>` (see NButton).
 export component NSwitch inherits Rectangle {
     in property <string> text;
     in-out property <bool> checked;
@@ -102,8 +115,9 @@ export component NSwitch inherits Rectangle {
     background: root.checked ? #2DD4BF1f : touch.has-hover && root.enabled ? Theme.surface-3 : Theme.surface-2;
     border-width: 1px;
     border-color: root.checked ? Theme.accent : focus.has-focus ? Theme.accent : Theme.control-border;
-    accessible-role: checkbox;
+    accessible-role: switch;
     accessible-label: root.text;
+    accessible-checkable: true;
     accessible-checked: root.checked;
     accessible-enabled: root.enabled;
     accessible-action-default => {
@@ -120,6 +134,9 @@ export component NSwitch inherits Rectangle {
     focus := FocusScope {
         enabled: root.enabled;
         key-pressed(event) => {
+            if (event.repeat) {
+                return reject;
+            }
             if (event.text == " " || event.text == "\n") {
                 root.flip();
                 return accept;
@@ -168,7 +185,7 @@ export component NSwitch inherits Rectangle {
     }
 }
 
-// A row of mutually exclusive choices.
+// A row of mutually exclusive choices. Bind `current-index` with `<=>` (see NButton).
 export component Segmented inherits Rectangle {
     in property <[string]> model;
     in-out property <int> current-index;
@@ -183,6 +200,7 @@ export component Segmented inherits Rectangle {
     border-radius: (root.item-height + 8px) / 2;
     background: Theme.surface-2;
     opacity: root.enabled ? 1 : 0.45;
+    accessible-role: radio-group;
 
     HorizontalLayout {
         padding: 4px;
@@ -193,8 +211,10 @@ export component Segmented inherits Rectangle {
             border-radius: root.item-height / 2;
             background: i == root.current-index ? Theme.primary
                 : ta.has-hover && root.enabled ? Theme.surface-3 : transparent;
-            accessible-role: button;
+            accessible-role: radio-button;
             accessible-label: item;
+            accessible-enabled: root.enabled;
+            accessible-checkable: true;
             accessible-checked: i == root.current-index;
             accessible-action-default => {
                 if (root.enabled) {
@@ -279,7 +299,8 @@ export component NavItem inherits Rectangle {
     background: root.active ? Theme.surface-2 : ta.has-hover ? #ffffff0d : transparent;
     accessible-role: tab;
     accessible-label: root.text;
-    accessible-checked: root.active;
+    accessible-item-selectable: true;
+    accessible-item-selected: root.active;
     accessible-action-default => {
         root.clicked();
     }
@@ -331,6 +352,7 @@ export component ValueField inherits HorizontalLayout {
     }
 
     TouchArea {
+        enabled: root.enabled;
         scroll-event(event) => {
             if (event.delta-y > 0) {
                 root.step(1, event.modifiers.shift);

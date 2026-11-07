@@ -6,6 +6,9 @@
 //! tray thread: forward them to the UI with `slint::invoke_from_event_loop` or
 //! `Weak::upgrade_in_event_loop`.
 
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+
 use ksni::blocking::{Handle, TrayMethods};
 use ksni::menu::StandardItem;
 use ksni::{Icon, MenuItem, ToolTip};
@@ -61,6 +64,21 @@ pub struct KitTray {
     state: TrayState,
     on_activate: Box<dyn Fn() + Send>,
     on_menu: Box<dyn Fn(&str) + Send>,
+    online: Arc<AtomicBool>,
+}
+
+/// Whether a tray host (the panel's StatusNotifierWatcher) is showing the icon right now.
+/// Cheap to clone and to read from the UI thread.
+#[derive(Debug, Clone)]
+pub struct TrayStatus(Arc<AtomicBool>);
+
+impl TrayStatus {
+    /// `false` while there is no tray host (e.g. GNOME without the AppIndicator extension, or
+    /// the panel restarting). Then a hidden window cannot be brought back: closing the window
+    /// should quit, and a window started hidden should be shown.
+    pub fn online(&self) -> bool {
+        self.0.load(Ordering::Relaxed)
+    }
 }
 
 impl ksni::Tray for KitTray {
@@ -131,8 +149,13 @@ impl ksni::Tray for KitTray {
             .collect()
     }
 
+    fn watcher_online(&self) {
+        self.online.store(true, Ordering::Relaxed);
+    }
+
     /// The panel's tray may start after the app (autostart at login): keep waiting.
     fn watcher_offline(&self, _reason: ksni::OfflineReason) -> bool {
+        self.online.store(false, Ordering::Relaxed);
         true
     }
 }
@@ -140,21 +163,39 @@ impl ksni::Tray for KitTray {
 pub type TrayHandle = Handle<KitTray>;
 
 /// Starts the tray. `on_activate`: left click on the icon; `on_menu`: a menu action's id.
-/// `None` if the D-Bus service could not be started (then there is no tray: let closing the
-/// window quit the app).
+///
+/// `None` only if the D-Bus service itself could not be started. A missing tray host does
+/// *not* give `None`: the service keeps waiting for one (the panel may start after the app),
+/// so check [`TrayStatus::online`] before hiding the window (see [`spawn_with_status`]).
 pub fn spawn(
     state: TrayState,
     on_activate: impl Fn() + Send + 'static,
     on_menu: impl Fn(&str) + Send + 'static,
 ) -> Option<TrayHandle> {
-    KitTray {
+    spawn_with_status(state, on_activate, on_menu).map(|(handle, _)| handle)
+}
+
+/// [`spawn`] plus a [`TrayStatus`] that says whether a tray host currently shows the icon.
+///
+/// Typical use: on close, hide the window only if `status.online()`, otherwise quit; and a
+/// few seconds after a `--tray` start, show the window if the status is still offline.
+pub fn spawn_with_status(
+    state: TrayState,
+    on_activate: impl Fn() + Send + 'static,
+    on_menu: impl Fn(&str) + Send + 'static,
+) -> Option<(TrayHandle, TrayStatus)> {
+    // Online until ksni says otherwise; without a host it calls `watcher_offline` right away.
+    let online = Arc::new(AtomicBool::new(true));
+    let handle = KitTray {
         state,
         on_activate: Box::new(on_activate),
         on_menu: Box::new(on_menu),
+        online: Arc::clone(&online),
     }
     .assume_sni_available(true)
     .spawn()
-    .ok()
+    .ok()?;
+    Some((handle, TrayStatus(online)))
 }
 
 /// Changes the tray state; nothing is sent over D-Bus if it did not change.

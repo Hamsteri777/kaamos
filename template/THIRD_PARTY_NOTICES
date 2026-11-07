@@ -1,0 +1,20 @@
+__TITLE__: GPL-3.0-or-later (file LICENSE).
+
+The user interface comes from Kaamos (https://github.com/Hamsteri777/kaamos,
+GPL-3.0-or-later), which embeds the following into the binary:
+
+----------------------------------------------------------------------------
+
+Inter 4.1 font, The Inter Project Authors (https://github.com/rsms/inter),
+SIL Open Font License 1.1: licenses/OFL-Inter.txt.
+
+----------------------------------------------------------------------------
+
+Navigation and warning icons derived from or modelled on Feather Icons
+(https://github.com/feathericons/feather, Cole Bemis), MIT License:
+licenses/MIT-Feather.txt.
+
+----------------------------------------------------------------------------
+
+Before publishing binaries, add the notices of the statically linked Rust crates
+(for example with cargo-about).

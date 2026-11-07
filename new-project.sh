@@ -33,6 +33,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 cp -r "$here/template" "$dest"
 mv "$dest/gitignore" "$dest/.gitignore"
 mv "$dest/packaging/__APP__.desktop" "$dest/packaging/$app.desktop"
+mv "$dest/packaging/__APP__.svg" "$dest/packaging/$app.svg"
 
 # Escape the title for sed (\, & and the | delimiter).
 title_sed=$(printf '%s' "$title" | sed 's/[\\&|]/\\&/g')

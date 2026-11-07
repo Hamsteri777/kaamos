@@ -6,10 +6,11 @@ license = "GPL-3.0-or-later"
 description = "__TITLE__"
 
 [dependencies]
-# Same Slint series as Kaamos (its platform helpers use the unstable winit 0.30 API).
-slint = { version = "1.18.1", features = ["unstable-winit-030"] }
-kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
+# "~" keeps the same Slint series as Kaamos (its platform helpers use the unstable winit 0.30
+# API, which may change in any minor release).
+slint = { version = "~1.18.1", features = ["unstable-winit-030"] }
+kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }
 
 [build-dependencies]
-slint-build = "1.18.1"
-kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
+slint-build = "~1.18.1"
+kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }

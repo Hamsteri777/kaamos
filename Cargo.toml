@@ -5,15 +5,16 @@ members = ["crates/ui", "crates/kaamos", "crates/gallery"]
 exclude = ["template"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/Hamsteri777/kaamos"
 
 [workspace.dependencies]
-# Slint is pinned to the 1.18 series: the platform helpers use the unstable winit 0.30 API.
-slint = { version = "1.18.1", features = ["unstable-winit-030"] }
-slint-build = "1.18.1"
+# "~1.18.1" keeps Slint on the 1.18 series (not 1.19): the platform helpers use the unstable
+# winit 0.30 API, which may change in any minor release.
+slint = { version = "~1.18.1", features = ["unstable-winit-030"] }
+slint-build = "~1.18.1"
 ksni = { version = "0.3.7", default-features = false, features = ["blocking", "async-io"] }
 kaamos = { path = "crates/kaamos" }
 kaamos-ui = { path = "crates/ui" }

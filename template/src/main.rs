@@ -4,7 +4,8 @@
 //! - a worker thread owns the slow resource and answers commands over a channel; the UI
 //!   never waits for it (`poll::drain_every` delivers the replies on the UI thread);
 //! - `platform::init` sets the Wayland app id and uses the activation token;
-//! - a ksni tray (Show / Quit); closing the window hides it, `--tray` starts hidden;
+//! - a ksni tray (Show / Quit); closing the window hides it, `--tray` starts hidden (both only
+//!   while a tray host shows the icon, otherwise the window could not be brought back);
 //! - start at login via `autostart`.
 
 use std::rc::Rc;
@@ -21,6 +22,8 @@ slint::include_modules!();
 /// Also the name of the `.desktop` file (packaging/__APP__.desktop).
 const APP_ID: &str = "__APP__";
 const TITLE: &str = "__TITLE__";
+/// After a `--tray` start, how long to wait for the panel's tray before showing the window.
+const TRAY_WAIT: Duration = Duration::from_secs(5);
 
 enum Cmd {
     Load,
@@ -77,9 +80,9 @@ fn main() -> Result<(), slint::PlatformError> {
     let tx = spawn_worker(reply_tx);
 
     // Tray. Its callbacks run on the tray thread.
-    let tray = Rc::new({
+    let (tray, tray_status) = {
         let (w1, w2) = (ui.as_weak(), ui.as_weak());
-        tray::spawn(
+        tray::spawn_with_status(
             TrayState {
                 id: APP_ID.into(),
                 title: TITLE.into(),
@@ -105,11 +108,18 @@ fn main() -> Result<(), slint::PlatformError> {
                 _ => {}
             },
         )
-    });
-    // Without a tray, closing the window quits (otherwise it hides to the tray).
-    if tray.is_none() {
-        ui.window().on_close_requested(|| {
-            let _ = slint::quit_event_loop();
+        .unzip()
+    };
+    let tray = Rc::new(tray);
+    let tray_online = move || tray_status.as_ref().is_some_and(|s| s.online());
+    // Closing the window hides it to the tray; without a tray host it quits, since nothing
+    // could bring the window back.
+    {
+        let tray_online = tray_online.clone();
+        ui.window().on_close_requested(move || {
+            if !tray_online() {
+                let _ = slint::quit_event_loop();
+            }
             slint::CloseRequestResponse::HideWindow
         });
     }
@@ -206,6 +216,15 @@ fn main() -> Result<(), slint::PlatformError> {
     let _ = tx.send(Cmd::Load);
     if !tray_only || tray.is_none() {
         ui.show()?;
+    } else {
+        // Started hidden: if no tray host shows up (e.g. GNOME without the AppIndicator
+        // extension), show the window instead of running invisibly.
+        let w = ui.as_weak();
+        slint::Timer::single_shot(TRAY_WAIT, move || {
+            if !tray_online() {
+                show_window(&w);
+            }
+        });
     }
     // Keeps running while the window is hidden; quit from the tray menu.
     slint::run_event_loop_until_quit()

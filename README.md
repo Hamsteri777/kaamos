@@ -10,7 +10,7 @@ extracted from NARME and PulsarFe. Slint 1.18.
 | Crate | Use as | Contents |
 |---|---|---|
 | `kaamos-ui` | build-dependency | `@kaamos/kaamos.slint`: `Theme`, `NButton`, `NSwitch`, `Segmented`, `Card`, `Caps`, `Chip`, `NavItem`, `ValueField`, `Dialog`, `SettingRow`, `Section`, `Stat`, `PageTitle`, `Hint`, `InfoTip` + `InfoLayer`; Inter font, icons |
-| `kaamos` | dependency | `platform::init` (Wayland app id + activation token), `tray` (ksni tray icon), `autostart`, `paths` (XDG), `poll` (worker thread → UI) |
+| `kaamos` | dependency | `platform::init` (Wayland app id + activation token), `tray` (ksni tray icon; `TrayStatus::online` says whether a panel shows it), `autostart`, `paths` (XDG), `poll` (worker thread → UI) |
 
 The Linux helpers fix problems that a plain Slint app has on KDE Plasma (Wayland):
 
@@ -24,12 +24,12 @@ The Linux helpers fix problems that a plain Slint app has on KDE Plasma (Wayland
 
 ```toml
 [dependencies]
-slint = { version = "1.18.1", features = ["unstable-winit-030"] }
-kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
+slint = { version = "~1.18.1", features = ["unstable-winit-030"] }
+kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }
 
 [build-dependencies]
-slint-build = "1.18.1"
-kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
+slint-build = "~1.18.1"
+kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }
 ```
 
 ```rust

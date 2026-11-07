@@ -27,4 +27,5 @@ project from the template and run its `check.sh`.
   sizes without the user's approval (both apps should keep their look).
 - Releases are git tags (`v0.1.0`, …); apps depend on a tag. Bump the tag in `template/Cargo.toml`
   and README when releasing.
-- Slint is pinned to 1.18 because `platform` uses the unstable winit 0.30 API.
+- Slint is held to the 1.18 series (`"~1.18.1"`, not `"1.18.1"`, which would allow 1.19) because
+  `platform` uses the unstable winit 0.30 API. Apps must use `~` too.

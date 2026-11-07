@@ -5,6 +5,7 @@ pkgver=0.1.0.r0.g0000000
 pkgrel=1
 pkgdesc="__TITLE__"
 arch=('x86_64')
+# Inter font (OFL-1.1) and Feather icons (MIT) from Kaamos. See THIRD_PARTY_NOTICES.
 license=('GPL-3.0-or-later' 'MIT' 'OFL-1.1')
 depends=('fontconfig' 'freetype2' 'gcc-libs' 'glibc' 'libxkbcommon' 'wayland' 'libglvnd')
 makedepends=('cargo' 'git')
@@ -50,5 +51,9 @@ package() {
   cd __APP__
   install -Dm755 target/release/__APP__ "$pkgdir/usr/bin/__APP__"
   install -Dm644 packaging/__APP__.desktop "$pkgdir/usr/share/applications/__APP__.desktop"
+  install -Dm644 packaging/__APP__.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/__APP__.svg"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 THIRD_PARTY_NOTICES "$pkgdir/usr/share/licenses/$pkgname/THIRD_PARTY_NOTICES"
+  install -Dm644 licenses/MIT-Feather.txt "$pkgdir/usr/share/licenses/$pkgname/MIT-Feather.txt"
+  install -Dm644 licenses/OFL-Inter.txt "$pkgdir/usr/share/licenses/$pkgname/OFL-Inter.txt"
 }
