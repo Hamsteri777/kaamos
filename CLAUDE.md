@@ -25,7 +25,8 @@ project from the template and run its `check.sh`.
 
 - Keep the theme and components in sync with what NARME/PulsarFe need; do not change colours or
   sizes without the user's approval (both apps should keep their look).
-- Releases are git tags (`v0.1.0`, …); apps depend on a tag. Bump the tag in `template/Cargo.toml`
-  and README when releasing.
+- Releases are git tags (`v0.1.0`, …); apps depend on a tag. When releasing, bump
+  `[workspace.package] version` in `Cargo.toml`, the version chip in `crates/gallery/ui/gallery.slint`
+  and the tag in `template/Cargo.toml` and README, run `./check.sh` and the template test, then tag.
 - Slint is held to the 1.18 series (`"~1.18.1"`, not `"1.18.1"`, which would allow 1.19) because
   `platform` uses the unstable winit 0.30 API. Apps must use `~` too.

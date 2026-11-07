@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 fn main() {
     // "@kaamos" → Kaamos' ui/ directory; std widgets in the dark Fluent style.
     let config = slint_build::CompilerConfiguration::new()

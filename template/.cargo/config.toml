@@ -1,4 +1,5 @@
-# Fetch git dependencies with the git CLI, so its credential helper (e.g. `gh auth setup-git`)
-# is used for private repositories.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Fetch git dependencies (Kaamos) with the git CLI, so your git config applies (URL rewrites,
+# credential helpers for private forks).
 [net]
 git-fetch-with-cli = true

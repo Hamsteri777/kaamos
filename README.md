@@ -25,11 +25,11 @@ The Linux helpers fix problems that a plain Slint app has on KDE Plasma (Wayland
 ```toml
 [dependencies]
 slint = { version = "~1.18.1", features = ["unstable-winit-030"] }
-kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }
+kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.4.0" }
 
 [build-dependencies]
 slint-build = "~1.18.1"
-kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.3.0" }
+kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.4.0" }
 ```
 
 ```rust
@@ -55,6 +55,8 @@ export component MainWindow inherits Window {
 ```
 
 ```rust
+slint::include_modules!(); // the components compiled by build.rs
+
 fn main() -> Result<(), slint::PlatformError> {
     kaamos::platform::init("my-app")?; // = the .desktop file name
     let ui = MainWindow::new()?;
@@ -62,8 +64,9 @@ fn main() -> Result<(), slint::PlatformError> {
 }
 ```
 
-For a private repository, let cargo use the git CLI (and its credential helper):
-`.cargo/config.toml` → `[net] git-fetch-with-cli = true`.
+Kaamos is a public git dependency, so no credentials are needed. If your git config rewrites
+GitHub URLs (e.g. to SSH), let cargo use the git CLI: `.cargo/config.toml` →
+`[net] git-fetch-with-cli = true` (the template does this).
 
 ## Start a new app
 
@@ -84,5 +87,5 @@ cargo run -p kaamos-gallery
 
 ## Licence
 
-GPL-3.0-or-later ([LICENSE](LICENSE)). Inter font: OFL-1.1; Feather-based icons: MIT; see
+Copyright (C) 2026 Hamsteri777. GPL-3.0-or-later ([LICENSE](LICENSE)). Inter font: OFL-1.1; Feather-based icons: MIT; see
 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).

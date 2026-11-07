@@ -3,6 +3,7 @@ name = "kaamos"
 description = "Linux desktop helpers for Slint apps: Wayland app id and activation token, ksni tray, autostart, XDG paths"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 

@@ -336,7 +336,7 @@ export component NavItem inherits Rectangle {
 export component ValueField inherits HorizontalLayout {
     in property <string> text;
     in property <string> unit;
-    in property <bool> enabled;
+    in property <bool> enabled: true;
     callback commit(string);
     callback step(int, bool);
     spacing: 4px;
@@ -406,7 +406,8 @@ export component ValueField inherits HorizontalLayout {
     }
 }
 
-// A dialog frame for popups. tone 1 = warning border.
+// A dialog frame for popups. tone 1 = alert: a 2px red (Theme.error) border, for warnings and
+// destructive confirmations.
 export component Dialog inherits Rectangle {
     in property <int> tone: 0;
     background: Theme.surface;

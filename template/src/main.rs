@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! __TITLE__.
 //!
 //! Structure (from Kaamos):

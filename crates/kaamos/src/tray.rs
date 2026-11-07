@@ -60,7 +60,8 @@ pub fn rgba_to_argb(rgba: &[u8]) -> Vec<u8> {
         .collect()
 }
 
-pub struct KitTray {
+/// The ksni tray behind [`TrayHandle`]; build it with [`spawn`] or [`spawn_with_status`].
+pub struct KaamosTray {
     state: TrayState,
     on_activate: Box<dyn Fn() + Send>,
     on_menu: Box<dyn Fn(&str) + Send>,
@@ -81,7 +82,7 @@ impl TrayStatus {
     }
 }
 
-impl ksni::Tray for KitTray {
+impl ksni::Tray for KaamosTray {
     fn id(&self) -> String {
         self.state.id.clone()
     }
@@ -160,7 +161,11 @@ impl ksni::Tray for KitTray {
     }
 }
 
-pub type TrayHandle = Handle<KitTray>;
+pub type TrayHandle = Handle<KaamosTray>;
+
+/// Old name of [`KaamosTray`] (from slint-kit).
+#[deprecated(since = "0.4.0", note = "renamed to KaamosTray")]
+pub type KitTray = KaamosTray;
 
 /// Starts the tray. `on_activate`: left click on the icon; `on_menu`: a menu action's id.
 ///
@@ -186,7 +191,7 @@ pub fn spawn_with_status(
 ) -> Option<(TrayHandle, TrayStatus)> {
     // Online until ksni says otherwise; without a host it calls `watcher_offline` right away.
     let online = Arc::new(AtomicBool::new(true));
-    let handle = KitTray {
+    let handle = KaamosTray {
         state,
         on_activate: Box::new(on_activate),
         on_menu: Box::new(on_menu),

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Local package for own use: builds the committed HEAD of this repository.
 # Usage (in this directory): makepkg -si
 pkgname=__APP__-git
@@ -27,7 +28,7 @@ pkgver() {
 prepare() {
   cd __APP__
   export RUSTUP_TOOLCHAIN=stable
-  # Kaamos is a git dependency; the git CLI uses your credential helper.
+  # Kaamos is a git dependency; the git CLI uses your git config (URL rewrites, credentials).
   export CARGO_NET_GIT_FETCH_WITH_CLI=true
   cargo fetch --locked --target "$(rustc --print host-tuple)"
 }

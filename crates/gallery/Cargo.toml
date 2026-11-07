@@ -3,6 +3,7 @@ name = "kaamos-gallery"
 description = "All Kaamos components in one window; also a usage example"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 publish = false
 
