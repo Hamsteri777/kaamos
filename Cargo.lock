@@ -2377,6 +2377,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "kaamos"
+version = "0.2.0"
+dependencies = [
+ "ksni",
+ "slint",
+]
+
+[[package]]
+name = "kaamos-gallery"
+version = "0.2.0"
+dependencies = [
+ "kaamos",
+ "kaamos-ui",
+ "slint",
+ "slint-build",
+]
+
+[[package]]
+name = "kaamos-ui"
+version = "0.2.0"
+
+[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4017,28 +4039,6 @@ dependencies = [
  "spin_on",
  "toml_edit",
 ]
-
-[[package]]
-name = "slint-kit"
-version = "0.1.0"
-dependencies = [
- "ksni",
- "slint",
-]
-
-[[package]]
-name = "slint-kit-gallery"
-version = "0.1.0"
-dependencies = [
- "slint",
- "slint-build",
- "slint-kit",
- "slint-kit-ui",
-]
-
-[[package]]
-name = "slint-kit-ui"
-version = "0.1.0"
 
 [[package]]
 name = "slint-macros"

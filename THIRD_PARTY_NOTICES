@@ -1,11 +1,11 @@
-slint-kit: GPL-3.0-or-later (LICENSE). The theme and widgets come from NARME and PulsarFe by
+Kaamos: GPL-3.0-or-later (LICENSE). The theme and widgets come from NARME and PulsarFe by
 the same author.
 
 ----------------------------------------------------------------------------
 
 crates/ui/ui/fonts/Inter-*.ttf: Inter 4.1, The Inter Project Authors
 (https://github.com/rsms/inter), SIL Open Font License 1.1: crates/ui/ui/fonts/OFL.txt.
-Embedded unchanged in applications that import @kit/kit.slint.
+Embedded unchanged in applications that import @kaamos/kaamos.slint.
 
 ----------------------------------------------------------------------------
 

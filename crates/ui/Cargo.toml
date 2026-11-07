@@ -1,6 +1,6 @@
 [package]
-name = "slint-kit-ui"
-description = "slint-kit's Slint components, theme, fonts and icons (build-time path only)"
+name = "kaamos-ui"
+description = "Kaamos' Slint components, theme, fonts and icons (build-time path only)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

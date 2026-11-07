@@ -1,6 +1,6 @@
 [package]
-name = "slint-kit-gallery"
-description = "All slint-kit components in one window; also a usage example"
+name = "kaamos-gallery"
+description = "All Kaamos components in one window; also a usage example"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,8 +8,8 @@ publish = false
 
 [dependencies]
 slint.workspace = true
-slint-kit.workspace = true
+kaamos.workspace = true
 
 [build-dependencies]
 slint-build.workspace = true
-slint-kit-ui.workspace = true
+kaamos-ui.workspace = true

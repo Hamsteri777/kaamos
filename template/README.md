@@ -1,6 +1,6 @@
 # __TITLE__
 
-Built with Rust, Slint and [slint-kit](https://github.com/Hamsteri777/slint-kit).
+Built with Rust, Slint and [Kaamos](https://github.com/Hamsteri777/kaamos).
 
 ```bash
 ./check.sh          # build, test, clippy, fmt

@@ -1,11 +1,11 @@
 // __TITLE__ – window. The logic lives in Rust (src/main.rs); this file shows values and
-// reports edits. Components: slint-kit (@kit/kit.slint).
+// reports edits. Components: Kaamos (@kaamos/kaamos.slint).
 
 import { SpinBox, ScrollView } from "std-widgets.slint";
 import {
     Theme, NButton, NSwitch, Chip, NavItem, Hint, PageTitle, SettingRow, Section, Stat,
     InfoLayer,
-} from "@kit/kit.slint";
+} from "@kaamos/kaamos.slint";
 
 export component MainWindow inherits Window {
     title: "__TITLE__";
@@ -62,20 +62,20 @@ export component MainWindow inherits Window {
                 }
                 NavItem {
                     text: "Status";
-                    icon: @image-url("@kit/icons/nav-state.svg");
+                    icon: @image-url("@kaamos/icons/nav-state.svg");
                     active: root.page == 0;
                     clicked => { root.page = 0; }
                 }
                 NavItem {
                     text: "Settings";
-                    icon: @image-url("@kit/icons/nav-eq.svg");
+                    icon: @image-url("@kaamos/icons/nav-eq.svg");
                     active: root.page == 1;
                     clicked => { root.page = 1; }
                 }
                 Rectangle { vertical-stretch: 1; }
                 NavItem {
                     text: "App";
-                    icon: @image-url("@kit/icons/nav-settings.svg");
+                    icon: @image-url("@kaamos/icons/nav-settings.svg");
                     active: root.page == 2;
                     clicked => { root.page = 2; }
                 }

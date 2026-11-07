@@ -5,7 +5,7 @@
 #   ./new-project.sh my-app "My App" ~/projects/my-app
 #
 # <app-id>: lowercase letters, digits and "-"; also the binary, crate and .desktop name.
-# SLINT_KIT_PATH=<this repo> uses path dependencies instead of the git tag (for testing).
+# KAAMOS_PATH=<this repo> uses path dependencies instead of the git tag (for testing).
 set -euo pipefail
 
 if [ $# -ne 3 ]; then
@@ -40,10 +40,10 @@ grep -rlI -e "__APP__" -e "__TITLE__" "$dest" | while read -r f; do
     sed -i "s|__APP__|$app|g; s|__TITLE__|$title_sed|g" "$f"
 done
 
-if [ -n "${SLINT_KIT_PATH:-}" ]; then
-    kit=$(cd "$SLINT_KIT_PATH" && pwd)
-    sed -i "s|^slint-kit = { git = .*|slint-kit = { path = \"$kit/crates/kit\" }|; \
-            s|^slint-kit-ui = { git = .*|slint-kit-ui = { path = \"$kit/crates/ui\" }|" "$dest/Cargo.toml"
+if [ -n "${KAAMOS_PATH:-}" ]; then
+    kit=$(cd "$KAAMOS_PATH" && pwd)
+    sed -i "s|^kaamos = { git = .*|kaamos = { path = \"$kit/crates/kaamos\" }|; \
+            s|^kaamos-ui = { git = .*|kaamos-ui = { path = \"$kit/crates/ui\" }|" "$dest/Cargo.toml"
 fi
 
 git -C "$dest" init -q -b main

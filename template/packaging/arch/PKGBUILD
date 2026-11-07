@@ -26,7 +26,7 @@ pkgver() {
 prepare() {
   cd __APP__
   export RUSTUP_TOOLCHAIN=stable
-  # slint-kit is a git dependency; the git CLI uses your credential helper.
+  # Kaamos is a git dependency; the git CLI uses your credential helper.
   export CARGO_NET_GIT_FETCH_WITH_CLI=true
   cargo fetch --locked --target "$(rustc --print host-tuple)"
 }

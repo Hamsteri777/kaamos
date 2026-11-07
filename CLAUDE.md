@@ -1,11 +1,11 @@
-# slint-kit
+# Kaamos
 
 Shared Slint UI kit and Linux desktop helpers (from NARME and PulsarFe). Talk to the user in Finnish.
 
 ## Layout
 
-- `crates/ui` (`slint-kit-ui`): `.slint` files, fonts, icons; no dependencies (build-dependency).
-- `crates/kit` (`slint-kit`): Rust helpers: `platform`, `tray` (feature "tray"), `autostart`,
+- `crates/ui` (`kaamos-ui`): `.slint` files, fonts, icons; no dependencies (build-dependency).
+- `crates/kaamos` (`kaamos`): Rust helpers: `platform`, `tray` (feature "tray"), `autostart`,
   `paths`, `poll`.
 - `crates/gallery`: every component in one window; also the usage example.
 - `template/` + `new-project.sh`: project template (excluded from the workspace).
@@ -14,8 +14,8 @@ Shared Slint UI kit and Linux desktop helpers (from NARME and PulsarFe). Talk to
 
 ```bash
 ./check.sh                      # build, test, clippy -D warnings, fmt (whole workspace)
-cargo run -p slint-kit-gallery
-SLINT_KIT_PATH=$PWD ./new-project.sh demo "Demo" /tmp/demo   # test the template with path deps
+cargo run -p kaamos-gallery
+KAAMOS_PATH=$PWD ./new-project.sh demo "Demo" /tmp/demo   # test the template with path deps
 ```
 
 Run `./check.sh` before every commit. When the template or a public API changes, also generate a

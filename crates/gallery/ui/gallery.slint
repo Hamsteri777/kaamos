@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// slint-kit gallery: every component once, in the same layout an app would use
+// Kaamos gallery: every component once, in the same layout an app would use
 // (sidebar + pages + bottom bar + InfoLayer).
 
 import { ComboBox, SpinBox, Slider, ScrollView, LineEdit } from "std-widgets.slint";
 import {
     Theme, NButton, NSwitch, Segmented, Card, Caps, Chip, NavItem, ValueField, Dialog,
     Hint, PageTitle, SettingRow, Section, Stat, InfoLayer,
-} from "@kit/kit.slint";
+} from "@kaamos/kaamos.slint";
 
 component Swatch inherits VerticalLayout {
     in property <string> name;
@@ -27,7 +27,7 @@ component Swatch inherits VerticalLayout {
 }
 
 export component Gallery inherits Window {
-    title: "slint-kit gallery";
+    title: "Kaamos gallery";
     preferred-width: 1000px;
     preferred-height: 720px;
     min-width: 760px;
@@ -63,7 +63,7 @@ export component Gallery inherits Window {
                     padding-left: 8px;
                     padding-bottom: 18px;
                     Text {
-                        text: "slint-kit";
+                        text: "Kaamos";
                         font-size: Theme.font-h2;
                         font-weight: 700;
                         color: Theme.text;
@@ -76,26 +76,26 @@ export component Gallery inherits Window {
                 }
                 NavItem {
                     text: "Controls";
-                    icon: @image-url("@kit/icons/nav-eq.svg");
+                    icon: @image-url("@kaamos/icons/nav-eq.svg");
                     active: root.page == 0;
                     clicked => { root.page = 0; }
                 }
                 NavItem {
                     text: "Cards";
-                    icon: @image-url("@kit/icons/nav-setups.svg");
+                    icon: @image-url("@kaamos/icons/nav-setups.svg");
                     active: root.page == 1;
                     clicked => { root.page = 1; }
                 }
                 NavItem {
                     text: "Theme";
-                    icon: @image-url("@kit/icons/nav-state.svg");
+                    icon: @image-url("@kaamos/icons/nav-state.svg");
                     active: root.page == 2;
                     clicked => { root.page = 2; }
                 }
                 Rectangle { vertical-stretch: 1; }
                 NavItem {
                     text: "Settings";
-                    icon: @image-url("@kit/icons/nav-settings.svg");
+                    icon: @image-url("@kaamos/icons/nav-settings.svg");
                     active: root.page == 3;
                     clicked => { root.page = 3; }
                 }
@@ -116,7 +116,7 @@ export component Gallery inherits Window {
                 }
                 Rectangle { horizontal-stretch: 1; }
                 Chip {
-                    text: "v0.1";
+                    text: "v0.2";
                     tone: 1;
                 }
             }

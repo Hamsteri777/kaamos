@@ -1,6 +1,6 @@
 //! __TITLE__.
 //!
-//! Structure (from slint-kit):
+//! Structure (from Kaamos):
 //! - a worker thread owns the slow resource and answers commands over a channel; the UI
 //!   never waits for it (`poll::drain_every` delivers the replies on the UI thread);
 //! - `platform::init` sets the Wayland app id and uses the activation token;
@@ -12,9 +12,9 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
+use kaamos::tray::{MenuEntry, TrayImage, TrayState};
+use kaamos::{autostart, platform, poll, tray};
 use slint::ComponentHandle;
-use slint_kit::tray::{MenuEntry, TrayImage, TrayState};
-use slint_kit::{autostart, platform, poll, tray};
 
 slint::include_modules!();
 

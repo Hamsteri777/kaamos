@@ -1,7 +1,7 @@
-# slint-kit
+# Kaamos
 
-A dark Slint UI kit and Linux desktop helpers for Rust apps, extracted from NARME and
-PulsarFe. Slint 1.18.
+Kaamos (Finnish for the polar night) is a dark Slint UI kit and Linux desktop helpers for Rust apps,
+extracted from NARME and PulsarFe. Slint 1.18.
 
 ![Gallery](docs/gallery.png)
 
@@ -9,8 +9,8 @@ PulsarFe. Slint 1.18.
 
 | Crate | Use as | Contents |
 |---|---|---|
-| `slint-kit-ui` | build-dependency | `@kit/kit.slint`: `Theme`, `NButton`, `NSwitch`, `Segmented`, `Card`, `Caps`, `Chip`, `NavItem`, `ValueField`, `Dialog`, `SettingRow`, `Section`, `Stat`, `PageTitle`, `Hint`, `InfoTip` + `InfoLayer`; Inter font, icons |
-| `slint-kit` | dependency | `platform::init` (Wayland app id + activation token), `tray` (ksni tray icon), `autostart`, `paths` (XDG), `poll` (worker thread → UI) |
+| `kaamos-ui` | build-dependency | `@kaamos/kaamos.slint`: `Theme`, `NButton`, `NSwitch`, `Segmented`, `Card`, `Caps`, `Chip`, `NavItem`, `ValueField`, `Dialog`, `SettingRow`, `Section`, `Stat`, `PageTitle`, `Hint`, `InfoTip` + `InfoLayer`; Inter font, icons |
+| `kaamos` | dependency | `platform::init` (Wayland app id + activation token), `tray` (ksni tray icon), `autostart`, `paths` (XDG), `poll` (worker thread → UI) |
 
 The Linux helpers fix problems that a plain Slint app has on KDE Plasma (Wayland):
 
@@ -25,23 +25,23 @@ The Linux helpers fix problems that a plain Slint app has on KDE Plasma (Wayland
 ```toml
 [dependencies]
 slint = { version = "1.18.1", features = ["unstable-winit-030"] }
-slint-kit = { git = "https://github.com/Hamsteri777/slint-kit", tag = "v0.1.0" }
+kaamos = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
 
 [build-dependencies]
 slint-build = "1.18.1"
-slint-kit-ui = { git = "https://github.com/Hamsteri777/slint-kit", tag = "v0.1.0" }
+kaamos-ui = { git = "https://github.com/Hamsteri777/kaamos", tag = "v0.2.0" }
 ```
 
 ```rust
 // build.rs
 let config = slint_build::CompilerConfiguration::new()
     .with_style("fluent-dark".into())
-    .with_library_paths(slint_kit_ui::library_paths());
+    .with_library_paths(kaamos_ui::library_paths());
 slint_build::compile_with_config("ui/main.slint", config).unwrap();
 ```
 
 ```slint
-import { Theme, NButton, Section, SettingRow, InfoLayer } from "@kit/kit.slint";
+import { Theme, NButton, Section, SettingRow, InfoLayer } from "@kaamos/kaamos.slint";
 
 export component MainWindow inherits Window {
     background: Theme.bg;
@@ -56,7 +56,7 @@ export component MainWindow inherits Window {
 
 ```rust
 fn main() -> Result<(), slint::PlatformError> {
-    slint_kit::platform::init("my-app")?; // = the .desktop file name
+    kaamos::platform::init("my-app")?; // = the .desktop file name
     let ui = MainWindow::new()?;
     ui.run()
 }
@@ -78,7 +78,7 @@ The template has a sidebar with pages, a Save / Revert bar, (i) infos, a worker 
 ## Gallery and checks
 
 ```bash
-cargo run -p slint-kit-gallery
+cargo run -p kaamos-gallery
 ./check.sh
 ```
 

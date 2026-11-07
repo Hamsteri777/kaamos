@@ -9,7 +9,7 @@
 //! - [`paths`]: XDG directories.
 //! - [`poll`]: deliver messages from worker threads to the UI thread.
 //!
-//! The Slint components live in the `slint-kit-ui` crate (`@kit/kit.slint`).
+//! The Slint components live in the `kaamos-ui` crate (`@kaamos/kaamos.slint`).
 
 pub mod autostart;
 pub mod paths;
